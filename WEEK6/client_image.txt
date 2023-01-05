@@ -1,0 +1,2 @@
+paris.png 3
+hanoi.jpg 2

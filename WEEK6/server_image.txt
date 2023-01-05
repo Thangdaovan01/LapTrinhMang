@@ -1,0 +1,2 @@
+seoul.png "mnt/c/Users/Admin/network-master/network-master/week6/image/seoul.png"
+paris.png "/C/Users/Admin/Downloads/paris.png"
