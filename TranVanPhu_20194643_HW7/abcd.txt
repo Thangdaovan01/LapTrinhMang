@@ -1,0 +1,5 @@
+gcc tcp_server_PHU.c -o tcp_server_PHU
+./tcp_server_PHU
+gcc tcp_client_PHU.c -o tcp_client_PHU
+./tcp_client_PHU
+C:/Users/Admin/LapTrinhMang/TranVanPhu_20194643_HW7/abc.txt

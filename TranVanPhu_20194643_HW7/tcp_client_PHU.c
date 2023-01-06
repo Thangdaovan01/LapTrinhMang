@@ -44,10 +44,46 @@ void get_parentFolPath_fname(char *path,char *par_fol_path, char *fname){
 		k++;
 	}
 }
+void getFile(char *filename, char *buffer3){
+    char buffer[1024] = {0};
+	
+	FILE *f;
+	char c;
+	// catch un-exist file
+	f = fopen(filename, "r");
+	if (f == NULL) {
+        printf("Error in file open\n");
+    }
+    // count the line
+	char buffer2[100];
+    strcpy(buffer3,"");
+	int count = 0;
+	for (c = getc(f); c != EOF; c = getc(f)){
+        //strcat(buffer3, c);
+		if (c == '\n'){
+			count = count + 1;
+		}
+	}
+	fclose(f);
+	
+	f = fopen(filename, "r");
+	// send data of file
+	for(int i=0;i< count + 1;i++){
+		fscanf(f,"%[^\n]\n",buffer2);
+        strcat(buffer3, buffer2);
+        strcat(buffer3,"\n");
+		}
+	int len = strlen(buffer3);
+	strncpy(buffer3,buffer3,len-2);
+	buffer3[strlen(buffer3)-1] = '\0';
+	fclose(f);
+    printf("BUFFER3\n%s\n",buffer3);
+     
+}
 
 int main(){
 	int client_sock;
-	char buff[BUFF_SIZE];
+	char buff[BUFF_SIZE], buff1[BUFF_SIZE];
 	struct sockaddr_in server_addr; /* server's address information */
 	int bytes_sent, bytes_received;
 	char path[BUFF_SIZE],//duong dan cua tep tin
@@ -96,7 +132,7 @@ int main(){
 	}
 	count_byte= count_byte + bytes_sent; //dem so byte gui toi server
 
-	bytes_received = recv(client_sock, fname, BUFF_SIZE, 0);
+	/*bytes_received = recv(client_sock, fname, BUFF_SIZE, 0);
 	if (bytes_received <= 0){
 		perror("\nError: ");
 		close(client_sock);
@@ -109,14 +145,17 @@ int main(){
 	printf("Duong dan tep tin: %s\n",new_path);
 	printf("duong dan toi thu muc cha cua tep tin: %s\n",par_fol_path);
 	printf("ten tep tin: %s\n",fname);
-
+*/
 	//--yeu cau server thay doi dinh dang van ban (chuyen thanh chu hoa)--
-	if((f=fopen(path,"r")) == NULL){
+	if((f=fopen(fname,"r")) == NULL){
 		printf("Khong the mo file!\n");
 		exit(0);
-	}	
-	f1=fopen(new_path,"w");//file moi chua du lieu da xu ly
-	while(1){
+	}else{printf("ok\n");}	
+	getFile(fname, buff1);
+	//f1=fopen(new_path,"w");//file moi chua du lieu da xu ly
+	f1=fopen(fname,"w");//file moi chua du lieu da xu ly
+
+	/*while(1){
 		k = fgetc(f);// k la ma ASCII cua ky tu duoc doc
 		if (k == EOF)
 			strcpy(buff, finish);			
@@ -144,7 +183,7 @@ int main(){
 		c=buff[0];
 		fputc(c,f1);
 		}
-	}
+	}*/
 	fclose(f);
 	fclose(f1);
 	printf("So byte da gui toi server la: %d\n", count_byte);
@@ -153,4 +192,4 @@ int main(){
 	return 0;
 }
 //C:\Users\Admin\network-master\network-master\TranVanPhu_20194643_HW7\abc.txt
-//C:/Users/Admin/network-master/network-master/TranVanPhu_20194643_HW7/abc.txt
+//C:/Users/Admin/LapTrinhMang/TranVanPhu_20194643_HW7/abc.txt

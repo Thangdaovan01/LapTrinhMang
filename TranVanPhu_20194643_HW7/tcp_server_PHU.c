@@ -22,7 +22,9 @@ void sig_chld(int signo);
 * Receive and echo message to client
 * [IN] sockfd: socket descriptor that connects to client 	
 */
+void getFile(char *filename, char *buffer3);
 void process(int sockfd);
+
 
 int main(){
 	
@@ -93,11 +95,48 @@ void sig_chld(int signo){
 		printf("\nChild %d terminated\n",pid);
 }
 
+void getFile(char *filename, char *buffer3){
+    char buffer[1024] = {0};
+	
+	FILE *f;
+	char c;
+	// catch un-exist file
+	f = fopen(filename, "r");
+	if (f == NULL) {
+        printf("Error in file open\n");
+    }
+    // count the line
+	char buffer2[100];
+    strcpy(buffer3,"");
+	int count = 0;
+	for (c = getc(f); c != EOF; c = getc(f)){
+        //strcat(buffer3, c);
+		if (c == '\n'){
+			count = count + 1;
+		}
+	}
+	fclose(f);
+	
+	f = fopen(filename, "r");
+	// send data of file
+	for(int i=0;i< count + 1;i++){
+		fscanf(f,"%[^\n]\n",buffer2);
+        strcat(buffer3, buffer2);
+        strcat(buffer3,"\n");
+		}
+	int len = strlen(buffer3);
+	strncpy(buffer3,buffer3,len-2);
+	buffer3[strlen(buffer3)-1] = '\0';
+	fclose(f);
+    printf("BUFFER3\n%s\n",buffer3);
+     
+}
+
 void process(int sockfd) {
 	char buff[BUFF_SIZE], fname[BUFF_SIZE];
 	int bytes_received, i, k=0;
 	char c;
-
+FILE *f;
 	//--xu ly ten file--
 	bytes_received = recv(sockfd, fname, BUFF_SIZE, 0);
 	if (bytes_received <= 0){
@@ -109,7 +148,7 @@ void process(int sockfd) {
 	printf("Receive file: %s\n",fname);
 
 	//chuyen ten file thanh chu hoa
-	for(i=strlen(fname)-1; i>=0; i--){
+	/*for(i=strlen(fname)-1; i>=0; i--){
 		if(k == 1){
 			if ('a' <= fname[i] && fname[i] <= 'z')
 				fname[i] = fname[i] - 32;
@@ -121,10 +160,16 @@ void process(int sockfd) {
 		perror("\nError: ");
 		close(sockfd);
 		return;
-	}
-
+	}*/
+	if((f=fopen(fname,"r")) == NULL){
+		printf("Khong the mo file!\n");
+		exit(0);
+	}else{printf("server ok\n");}
+	fclose(f);
+	getFile(fname,buff);
+	printf("IN duwoc");
 	//--xu ly phan van ban--
-		while (1){
+		/*while (1){
 			bytes_received = recv(sockfd, buff, BUFF_SIZE, 0);
 			if (bytes_received <= 0){
 			perror("\nError: ");
@@ -147,6 +192,7 @@ void process(int sockfd) {
 				close(sockfd);
 			}
 			}
-		}
+		}*/
 		close(sockfd);
 }
+
