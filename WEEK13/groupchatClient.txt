@@ -1,0 +1,4 @@
+EPMSN AFYR
+
+thang : hello
+thang : hi
