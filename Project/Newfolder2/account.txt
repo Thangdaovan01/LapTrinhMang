@@ -7,3 +7,6 @@ test4|123|1|36
 test5|123|1|44
 umihara|123|1|10
 shinichi|123|1|8
+thang|123|1|0
+nga|123|1|0
+admin|123|0|0

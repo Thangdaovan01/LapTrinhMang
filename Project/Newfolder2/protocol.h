@@ -1,19 +1,15 @@
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-#include "question.h"
+
 typedef enum
 {
-    USER,
-    PASS,
-    REGISTER,
-    LOGOUT,
-    CHECK,
-    CHOOSE_ANWSER,
-    TOPIC_LEVEL,
-    HELP,
-    INFORMATION,
+    LOGIN = 01,
+    SIGNUP = 02,
+    CHOOSE_ANWSER = 03,
+    HELP = 04,
+    SHOWRANKTABLE = 05,
 } OPCODE;
 
 typedef enum
@@ -25,86 +21,52 @@ typedef enum
 
 typedef enum
 {
-    SYNTAX_ERROR = 02,
-    INVALID_OPERATION = 03,
-    USER_IS_NOT_SIGNIN = 04,
-    GAME_IS_PLAYING_DONT_LOG_IN = 05,
+    LOGIN_SUCCESS = 01,
+    USERNAME_NOT_EXISTED = 02,
+    PASSWORD_INCORRECT = 03,
 
-    USER_NAME_FOUND = 11,
-    USER_NAME_NOT_FOUND = 12,
-    USER_NAME_BLOCKED = 13,
-    USER_NAME_IS_SIGNIN = 14,
+    SIGNIN_SUCCESS = 04,
+    USERNAME_EXISTED = 05,
 
-    PASSWORD_CORRECT = 21,
-    PASSWORD_INCORRECT = 22,
-    PASSWORD_INCORRECT_THREE_TIMES = 23,
-    PASSWORD_CORRECT_BUT_ACCOUNT_IS_SIGNINED_IN_ORTHER_CLIENT = 24,
+    TRUE_ANSWER = 06,
+    WRONG_ANSWER = 07,
+    INVALID_ANSWER = 10,
 
-    LOGOUT_SUCCESS = 31,
-
-    REGISTER_SUCCESSFULL = 41,
-    REGISTER_USERNAME_EXISTED = 42,
-
-    ANSWER_IS_CORRECT = 51,
-    ANSWER_IS_INCORRECT = 52,
-    ANSWER_IS_INVALID = 53,
-
-    USER_USED_HINT_SUCCESS = 61,
-    USER_USED_HINT_FAIL = 62,
-
-    TOPIC_USER_CHOOSE_LEVEL = 71,
-    TOPIC_TYPE_INVALID = 72,
-    TOPIC_USER_DONT_CHOOSE_LEVEL = 73,
-
-    INFORMATION_SUCCESS = 81,
-    INFORMATION_ORTHER_PLAYER_ANSWERING = 82,
-
-    GAME_READY = 91,
-    GAME_NOT_READY = 92,
-    GAME_END_WIN = 93,
+    NO_MORE_HELP = 11,
+    HELP_SUCCESS = 12,
 
 } MESSAGE_STATUS;
 
 typedef struct
 {
     OPCODE code;
-    char message[50];
+    char username[50];
+    char pass[50];
+    char answer[50];
 } Request;
 
+typedef struct 
+{
+    int stt;
+    char question[BUFF_SIZE];
+    char answer1[BUFF_SIZE];
+    char answer2[BUFF_SIZE];
+    char answer3[BUFF_SIZE];
+    char answer4[BUFF_SIZE];
+    //LEVEL level;
+    char level[10];
+    char true_ans[5];
+    char wrong_ans1[5];
+    char wrong_ans2[5];
+} RequestQuestion;
 typedef struct
 {
     //GAMEPLAY_STATUS status;
     MESSAGE_STATUS code;
     char message[50];
     char data[50];
+    //char position[5];
 } Response;
-//core function
-/*int receiveRequest(int socket, Request *buff, int size, int flags);
-int sendRequest(int socket, Request *buff, int size, int flags);
-
-int sendMessage(int socket, Response *msg, int size, int flags);
-int receiveMessage(int socket, Response *msg, int size, int flags);
-
-// set message response
-void setMessageResponse(Response *msg);
-void readMessageResponse(Response *msg);
-
-//set opcode request
-void setOpcodeRequest(Request *request, char *input);
-
-//send question
-int sendQuestion(int socket, Question *question, int size, int flags);
-int receiveQuestion(int socket, Question *question, int size, int flags);
-//send information
-int sendInformation(int socket, Information *infor, int size, int flags);
-int receiveInformation(int socket, Information *infor, int size, int flags);
-//request get
-void requestGet(int socket);
-void requestLogout(int socket, char *username);
-void requestCheckInformation(int socket);
-void requestGetHelp(int socket);
-#endif
-*/
 
 int receiveRequest(int socket, Request *buff, int size, int flags)
 {
@@ -117,6 +79,26 @@ int receiveRequest(int socket, Request *buff, int size, int flags)
 }
 
 int sendRequest(int socket, Request *buff, int size, int flags)
+{
+  int n;
+
+  n = send(socket, buff, size, flags);
+  if (n < 0)
+    perror("Error: ");
+  return n;
+}
+
+int receiveRequestQuestion(int socket, RequestQuestion *buff, int size, int flags)
+{
+  int n;
+
+  n = recv(socket, buff, size, flags);
+  if (n < 0)
+    perror("Error: ");
+  return n;
+}
+
+int sendRequestQuestion(int socket, RequestQuestion *buff, int size, int flags)
 {
   int n;
 
@@ -146,98 +128,47 @@ int receiveResponse(int socket, Response *msg, int size, int flags)
 
 void setMessageResponse(Response *msg)
 {
-  if (msg->code != NULL)
-  {
+  //if (msg->code != NULL)
+  //{
     switch (msg->code)
     {
-    case SYNTAX_ERROR:
-      strcpy(msg->message, "Syntax error ");
+    case LOGIN_SUCCESS:
+      strcpy(msg->message, "LOGIN SUCCESS");
       break;
-    case INVALID_OPERATION:
-      strcpy(msg->message, "Invalid operation ");
-      break;
-    case USER_NAME_FOUND:
-      strcpy(msg->message, "Username is correct ");
-      break;
-    case USER_NAME_NOT_FOUND:
-      strcpy(msg->message, "Cannot find account ");
-      break;
-    case USER_NAME_BLOCKED:
-      strcpy(msg->message, "Account is blocked ");
-      break;
-    case USER_NAME_IS_SIGNIN:
-      strcpy(msg->message, "Login only one account ");
-      break;
-    case PASSWORD_CORRECT:
-      strcpy(msg->message, "Login successful ");
+    case USERNAME_NOT_EXISTED:
+      strcpy(msg->message, "USERNAME NOT EXISTED");
       break;
     case PASSWORD_INCORRECT:
-      strcpy(msg->message, "Password incorrect ");
+      strcpy(msg->message, "PASSWORD INCORRECT");
       break;
-    case PASSWORD_INCORRECT_THREE_TIMES:
-      strcpy(msg->message, "Password is incorrect. Account is blocked ");
+    case SIGNIN_SUCCESS:
+      strcpy(msg->message, "SIGNIN SUCCESS");
       break;
-    case LOGOUT_SUCCESS:
-      strcpy(msg->message, "Logout successful ");
+    case USERNAME_EXISTED:
+      strcpy(msg->message, "USERNAME EXISTED");
       break;
-    case REGISTER_SUCCESSFULL:
-      strcpy(msg->message, "Register successfull ");
+    case TRUE_ANSWER:
+      strcpy(msg->message, "TRUE ANSWER");
       break;
-    case REGISTER_USERNAME_EXISTED:
-      strcpy(msg->message, "Username is existed ");
+    case WRONG_ANSWER:
+      strcpy(msg->message, "WRONG ANSWER");
       break;
-    case PASSWORD_CORRECT_BUT_ACCOUNT_IS_SIGNINED_IN_ORTHER_CLIENT:
-      strcpy(msg->message, "Account is signin in orhter client ");
+    case INVALID_ANSWER:
+      strcpy(msg->message, "INVALID ANSWER");
       break;
-    case ANSWER_IS_CORRECT:
-      strcpy(msg->message, "The answer is correct ");
+    case NO_MORE_HELP:
+      strcpy(msg->message, "NO MORE HELP");
       break;
-    case ANSWER_IS_INCORRECT:
-      strcpy(msg->message, "The answer is incorrect \nEnd game");
-      break;
-    case ANSWER_IS_INVALID:
-      strcpy(msg->message, "The answer is invalid ");
-      break;
-    case USER_USED_HINT_SUCCESS:
-      strcpy(msg->message, "User used hint success! ");
-      break;
-    case USER_USED_HINT_FAIL:
-      strcpy(msg->message, "User used hint fail! You have used up the suggestions ");
-      break;
-    case TOPIC_USER_CHOOSE_LEVEL:
-      strcpy(msg->message, "");
-      break;
-    case TOPIC_TYPE_INVALID:
-      strcpy(msg->message, "User choose level is invalid ");
-      break;
-    case INFORMATION_SUCCESS:
-      strcpy(msg->message, "");
-      break;
-    case INFORMATION_ORTHER_PLAYER_ANSWERING:
-      strcpy(msg->message, "");
-      break;
-    case GAME_READY:
-      strcpy(msg->message, "Game ready ");
-      break;
-    case GAME_NOT_READY:
-      strcpy(msg->message, "Waiting orther player... ");
-      break;
-    case TOPIC_USER_DONT_CHOOSE_LEVEL:
-      strcpy(msg->message, "");
-      break;
-    case GAME_END_WIN:
-      strcpy(msg->message, "End game.\nYou are champion ");
-      break;
-    case GAME_IS_PLAYING_DONT_LOG_IN:
-      strcpy(msg->message, "\nGame is playing!! You can't login \n");
+    case HELP_SUCCESS:
+      strcpy(msg->message, "HELP SUCCESS");
       break;
     default:
       strcpy(msg->message, "Exception ");
       break;
     }
-  }
+  //}
 }
-
+/*
 void readMessageResponse(Response *msg)
 {
   if (msg->code != NULL)
@@ -259,7 +190,7 @@ void readMessageResponse(Response *msg)
     }
   }
 }
-
+*/
 /*void setOpcodeRequest(Request *request, char *input)
 {
   char code[BUFF_SIZE], data[BUFF_SIZE];
@@ -285,7 +216,7 @@ void readMessageResponse(Response *msg)
     request->code = HELP;
 }
 */
-
+/*
 int sendQuestion(int socket, Question *question, int size, int flags)
 {
   int n;
@@ -346,3 +277,4 @@ void requestGetHelp(int socket)
   setOpcodeRequest(request, "HELP help");
   sendRequest(socket, request, sizeof(Request), 0);
 }
+*/

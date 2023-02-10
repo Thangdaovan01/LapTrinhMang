@@ -1,5 +1,3 @@
-//#ifndef __ACCOUNT__
-//#define __ACCOUNT__
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -14,31 +12,19 @@
 
 #define ADMIN 0
 #define PLAYER 1
+
 typedef struct account
 {
     char username[30];
     char password[30];
     int position; // 0: admin (1 admin) 1: player (>1 player)
     int status;  //1 online  0 offline
-    int accountStatus; //1: active     0: blocked
+    //int accountStatus; //1: active     0: blocked
     //int countSignIn;
     int score;
     int maxScore;
     struct account *next;
 }Account;
-
-/*Account **createLinkList();                                                                       //Init link list NULL
-Account *findUserNameAccount(Account **head, char *username);                                     // find Account By Username
-//Account *findUserNameAccountByPosition(Account **head, int position);                             // find account by position
-Account *newAccount(char *username, char *password, int accountStatus, int position);             // create node
-void addAccount(Account **head, char *username, char *password, int accountStatus); //add node to link list
-//int countMemberOnline(Account **head, int *numberPLayerArray);                                    //count member online and save position into array
-void printListAccount(Account **head);                                                            // print link list
-void splitAccountFromFile(char *input, char *position, char *username, char *password, char *account, char *score);
-void blockAccount(Account **head, char *username);  //change status of account to block
-//void signinAccount(Account **head, char *username); //change status to login
-#endif
-*/
 
 Account **createLinkList()
 {
@@ -60,56 +46,50 @@ Account *findUserNameAccount(Account **head, char *username)
     return NULL;
 }
 //create node
-Account *newAccount(char *username, char *password, char *accountStatus, char *maxScore/*, int accountStatus, int position*/)
+Account *newAccount(char *username, char *password, char *position, char *maxScore/*, int accountStatus, int position*/)
 {
     Account *new1 = (Account *)malloc(sizeof(Account));
     strcpy(new1->username, username);
     strcpy(new1->password, password);
-    /*new->accountStatus = accountStatus;
-    new->position = position;
-    new->status = OFFLINE;
-    new->countSignIn = 0;
-    new->next = NULL;*/
     new1->status = OFFLINE;
-    new1->accountStatus = atoi(accountStatus);
-    new1->position = PLAYER;
+    new1->position = atoi(position);
     new1->score = 0;
     new1->maxScore = atoi(maxScore);
     return new1;
 }
 //add node
-void addAccount(Account **head, char *username, char *password, char *accountStatus,char *maxScore)
+void addAccount(Account **head, char *username, char *password, char *position,char *maxScore)
 {
-    Account *new1 = newAccount(username, password, accountStatus, maxScore);
+    Account *new1 = newAccount(username, password, position, maxScore);
     Account *current = (*head);
-    printf("addAccount1\n");
+    //printf("addAccount1\n");
     if (*head == NULL)
     {
-        printf("addAccount1-1\n");
+        //printf("addAccount1-1\n");
         (*head) = new1;
     }
     else
     {
-        printf("addAccount1-2\n");
+        //printf("addAccount1-2\n");
         while (current->next != NULL){
-            printf("addAccount1-2-1\n");
+            //printf("addAccount1-2-1\n");
             current = current->next;
-            printf("addAccount1-2-2\n");
+            //printf("addAccount1-2-2\n");
         }
-        printf("addAccount1-2-3\n");
+        //printf("addAccount1-2-3\n");
         current->next = new1;
     }
-    printf("addAccount1-3\n");
+    //printf("addAccount1-3\n");
 }
 
-void splitAccountFromFile(char *input, char *username, char *password, char *accountStatus, char *score)
+void splitAccountFromFile(char *input, char *username, char *password, char *position, char *score)
 {
 	int usernameLength = 0;
 	int passwordLength = 0;
-	int accountStatusLength = 0;
+	int positionLength = 0;
 	int scoreLength = 0;
 	int i;
-	printf("splitAccountFromFile\n");
+	//printf("splitAccountFromFile\n");
 	//split username
 	for (i = 0; i < strlen(input); i++)
 	{
@@ -135,10 +115,10 @@ void splitAccountFromFile(char *input, char *username, char *password, char *acc
 	{
 		if (input[i] == '|')
 			break;
-		accountStatus[accountStatusLength++] = input[i];
+		position[positionLength++] = input[i];
 	}
 	i++;
-	accountStatus[accountStatusLength] = '\0';
+	position[positionLength] = '\0';
 	//split score
 	for (i; i < strlen(input); i++)
 	{
@@ -163,19 +143,19 @@ void readAccountFromFile(Account **head)
     int maxScore;*/
     char position[5];
     char status[5];
-    char accountStatus[5];
+    //char accountStatus[5];
     char score[BUFF_SIZE];
     char maxScore[BUFF_SIZE];
-    printf("readAccountFromFile\n");
+    //printf("readAccountFromFile\n");
     while (1)
     {
         if (feof(fin))
             break;
         fgets(input, BUFF_SIZE, fin);
-        splitAccountFromFile(input, username, password, accountStatus, maxScore);
-        printf("readAccountFromFile\n");
-        addAccount(head, username, password, accountStatus, maxScore);
-        printf("addAccount2\n");
+        splitAccountFromFile(input, username, password, position, maxScore);
+        //printf("readAccountFromFile\n");
+        addAccount(head, username, password, position, maxScore);
+        //printf("addAccount2\n");
     }
     fclose(fin);
 }
@@ -198,13 +178,57 @@ void printListAccount(Account **head)
     }
 }
 
-void blockAccount(Account **head, char *username)
-{
-    Account *ptr = findUserNameAccount(head, username);
-    ptr->accountStatus = BLOCKED;
-}
+
 void signinAccount(Account **head, char *username)
 {
     Account *ptr = findUserNameAccount(head, username);
     ptr->status = ONLINE;
+}
+
+int checkUsername(Account *head, char *username)
+{
+    Account *p = head;
+    while(p!=NULL){
+        if(strcmp(p->username, username)==0)
+            return 5;
+        p=p->next; 
+    }
+    return 4;
+}
+
+int checkPosition(Account *head)
+{
+    Account *p = head;
+    while(p!=NULL){
+        if(p->position==0)
+            return 1;
+        p=p->next; 
+    }
+    return 0;
+}
+
+
+int checkAccount(Account *head, char *username, char *password)
+{
+    Account *p = head;
+    int i = 0;
+    if(checkUsername(p,username)!=5) return 2;
+    while(p!=NULL){
+        if((checkUsername(p,username)==5) && (strcmp(p->password, password)==0))
+            return 1;
+        //if((checkUsername(p,username)==5) && (strcmp(p->password, password)!=0))
+        //    return 3;
+        p=p->next;
+        //return 1;
+    }
+    
+    return 3;
+}
+
+
+void printInFile(char* username, char* password){
+	FILE *p;
+	p = fopen("account.txt","a");
+	fprintf(p,"\n%s|%s|1|0", username, password);
+	fclose(p);
 }
