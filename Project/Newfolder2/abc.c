@@ -19,20 +19,20 @@ int main(){
     int sttcauDe = 0;
     while((p!=NULL) /*&& (strcmp(p->level, "EASY")==0)*/ && (sttcauDe < 5)){
         if(strcmp(p->level, "EASY")==0){
-        printf("EASY\n");
-        xuatMotCauHoi(p);
-        printf("Answer is %s\n",p->true_ans);
-        char answer[5];
-        printf("Nhap answer: ");
-        scanf("%s",answer);
-        
-        if(checkAnswer1(p,answer) ==0){
-            printf("WRong answer\n");
-        }else{
-            printf("True Answer\n");
-        }
-        printf("ABCD\n");
-        sttcauDe++;
+            printf("EASY\n");
+            xuatMotCauHoi(p);
+            printf("Answer is %s\n",p->true_ans);
+            char answer[5];
+            printf("Nhap answer: ");
+            scanf("%s",answer);
+            
+            if(checkAnswer1(p,answer) ==0){
+                printf("WRong answer\n");
+            }else{
+                printf("True Answer\n");
+            }
+            printf("ABCD\n");
+            sttcauDe++;
         }
         p=p->next;
         

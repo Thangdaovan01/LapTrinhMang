@@ -68,7 +68,6 @@ Question *newQuestion(char *stt, char *level, char *question, char *answer1, cha
     return new1;
 }
 
-
 void addQuestion(Question **head, char *stt, char *level, char *question, char *answer1, char *answer2, char *answer3, char *answer4, char *answerTrue, char *answerWrong1, char *answerWrong2)
 {
     Question *new1 = newQuestion(stt, level, question, answer1, answer2, answer3, answer4, answerTrue, answerWrong1, answerWrong2);
@@ -300,6 +299,16 @@ void xuatMotCauHoi(Question *head)
 {
     Question *p=head;
     printf("%s\nA. %s\nB. %s\nC. %s\nD. %s\n",p->question,p->answer1,p->answer2,p->answer3,p->answer4);  
+
+    //printf("%s\nA. %s\nB. %s\nC. %s\nD. %s\nDap an dung %s\n",p->question,p->answer1,p->answer2,p->answer3,p->answer4,p->true_ans);  
+}
+
+Question *exportQuestion(Question *head, char *str)
+{
+    Question *p=head;
+    if(strcmp(p->level, str)==0)
+        return p;
+        //printf("%s\nA. %s\nB. %s\nC. %s\nD. %s\n",p->question,p->answer1,p->answer2,p->answer3,p->answer4);  
 }
 
 void xuatMotDanhSachCauHoi(Question *head)
@@ -315,15 +324,21 @@ void xuatMotDanhSachCauHoi(Question *head)
 
 int checkAnswer1(Question *head, char *answer)
 {
-    Question *ptr;
-    int i = 0;
+    Question *ptr = head;
+    //int i = 0;
     //for (ptr = head; ptr != NULL; ptr = ptr->next)
     //{
-        printf("checkAnswer1-true answer: %s \n",ptr->true_ans);
-        printf("checkAnswer1-answer: %s \n",answer);
+    //    printf("checkAnswer1-true answer: %s \n",ptr->true_ans);
+    //    printf("checkAnswer1-answer: %s \n",answer);
         if (strcmp(ptr->true_ans,answer)==0)
-            return 1;
+            return 6;
    // }
+    return 7;
+}
+
+int checkAnswer2(char *answer1){
+    if((strcmp(answer1,"A")==0) || (strcmp(answer1,"B")==0) || (strcmp(answer1,"C")==0) || (strcmp(answer1,"D")==0) ||/* (strcmp(answer1,"H")==0) ||*/ (strcmp(answer1,"S")==0))
+        return 1;
     return 0;
 }
 
@@ -338,6 +353,26 @@ void menuQuyenTroGiup(){
     printf("\n\tBam phim (2) de chon quyen tro giup Goi dien thoai cho nguoi than\n");
     printf("\n\tBam phim (3) de chon quyen tro giup Xin y kien khan gia truong quay\n");
     printf("\n\tBam phim (4) de chon quyen tro giup Hoi to tu van o truong quay\n");
-    
 }
+
+int receiveQuestion(int socket, Question *buff, int size, int flags)
+{
+  int n;
+
+  n = recv(socket, buff, size, flags);
+  if (n < 0)
+    perror("Error: ");
+  return n;
+}
+
+int sendQuestion(int socket, Question *buff, int size, int flags)
+{
+  int n;
+
+  n = send(socket, buff, size, flags);
+  if (n < 0)
+    perror("Error: ");
+  return n;
+}
+
 

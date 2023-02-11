@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <unistd.h>
-//#include "question.h"
+#include "question.h"
 #include "account.h"
 #include "protocol.h"
 
@@ -32,14 +32,15 @@ int main(int argc, char *argv[]){
 	
 	FILE *f1;
 	FILE *f2;
-	int client_sock;
-	char buff[BUFF_SIZE + 1], mess[BUFF_SIZE + 1], allmess[BUFF_SIZE + 1], username[BUFF_SIZE + 1], password[BUFF_SIZE + 1];
+	int client_sock, count = 0;
+	char buff[BUFF_SIZE + 1], mess[BUFF_SIZE + 1], allmess[BUFF_SIZE + 1], username[BUFF_SIZE + 1], password[BUFF_SIZE + 1], answer1[10];
 	struct sockaddr_in server_addr; /* server's address information */
 	int msg_len, bytes_sent, bytes_sent2, bytes_received;
 	int choose1, choose2;
 	Request *request = (Request *)malloc(sizeof(Request));
     Response *response = (Response *)malloc(sizeof(Response));
-	
+	Question *question = (Question *)malloc(sizeof(Question));
+    
 	//Step 1: Construct socket
 	client_sock = socket(AF_INET,SOCK_STREAM,0);
 	
@@ -109,6 +110,61 @@ int main(int argc, char *argv[]){
 				}
 				buff[strlen(buff)]='\0';
 				printf("Receive: %s\n",buff);
+				if(strcmp(buff,"Player")==0){
+					while(count < 3)
+					{
+						receiveQuestion(client_sock,question,sizeof(Question),0);
+						xuatMotCauHoi(question);
+						printf("Nhap cac dap an A, B, C, D. Nhap H de nhan su tro giup. Nhap S de dung cuoc choi\n");
+						printf("COUNT: %d\n", count);
+					
+						do{
+							printf("\nNhap dap an: ");
+							scanf("%s",answer1);
+							answer1[strlen(answer1)]='\0';
+							//printf("Dap an ban chon: %s\n", answer1);
+							//printf("Dap an 1: %s\n",answer1);
+							if(strcmp(answer1,"H")==0){
+								strcpy(request->answer,answer1);
+								request->code = 04;
+								sendRequest(client_sock, request, sizeof(Request), 0);
+								receiveResponse(client_sock, response, sizeof(Response),0);
+								printf("Help: %s\n", response->data);
+		
+							}
+							//printf("DAP ANNNNNNNN\n");
+						}while(checkAnswer2(answer1)==0);
+						//printf("2DAP ANNNNNNNN\n");
+						strcpy(request->answer,answer1);
+						
+						if(strcmp(answer1,"S")==0){
+							request->code = 06;
+							sendRequest(client_sock, request, sizeof(Request), 0);
+							receiveResponse(client_sock, response, sizeof(Response),0);
+							printf("Mess: %s Tien: %d\n", response->message, response->tienThuong);
+							break;
+						}else if((strcmp(answer1,"A")!=0) || (strcmp(answer1,"B")!=0) || (strcmp(answer1,"C")!=0) || (strcmp(answer1,"D")!=0)){
+							request->code = 03;
+							
+							// Gui dap an
+							sendRequest(client_sock, request, sizeof(Request), 0);
+							//Nhan ket qua tra ve sau khi gui dap an
+							receiveResponse(client_sock, response, sizeof(Response),0);
+							printf("%s\n", response->message);
+							if(response->code == 6){
+								printf("True answer\n");
+							}else{
+								printf("Wrong answer\n");
+								receiveResponse(client_sock, response, sizeof(Response),0);
+								printf("Mess: %s Tien: %d\n", response->message, response->tienThuong);
+	
+								break;
+							} 
+						}
+						
+						count++;
+					}
+				}
 				break;
 
 			case 2:

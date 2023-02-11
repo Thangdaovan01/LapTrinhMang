@@ -10,6 +10,7 @@ typedef enum
     CHOOSE_ANWSER = 03,
     HELP = 04,
     SHOWRANKTABLE = 05,
+    STOPGAME = 06,
 } OPCODE;
 
 typedef enum
@@ -35,6 +36,7 @@ typedef enum
     NO_MORE_HELP = 11,
     HELP_SUCCESS = 12,
 
+    END_OF_GAME = 14,
 } MESSAGE_STATUS;
 
 typedef struct
@@ -45,6 +47,8 @@ typedef struct
     char answer[50];
 } Request;
 
+//gui cau hoi tu client khi nhap tu phia client
+//gui cau hoi cho client
 typedef struct 
 {
     int stt;
@@ -65,6 +69,7 @@ typedef struct
     MESSAGE_STATUS code;
     char message[50];
     char data[50];
+    int tienThuong;
     //char position[5];
 } Response;
 
@@ -161,6 +166,9 @@ void setMessageResponse(Response *msg)
       break;
     case HELP_SUCCESS:
       strcpy(msg->message, "HELP SUCCESS");
+      break;
+    case END_OF_GAME:
+      strcpy(msg->message, "END GAME");
       break;
     default:
       strcpy(msg->message, "Exception ");

@@ -21,6 +21,8 @@ typedef struct account
     int status;  //1 online  0 offline
     //int accountStatus; //1: active     0: blocked
     //int countSignIn;
+    int numHelp;
+    int numTrueAns;
     int score;
     int maxScore;
     struct account *next;
@@ -53,6 +55,8 @@ Account *newAccount(char *username, char *password, char *position, char *maxSco
     strcpy(new1->password, password);
     new1->status = OFFLINE;
     new1->position = atoi(position);
+    new1->numTrueAns = 0;
+    new1->numHelp = 0;
     new1->score = 0;
     new1->maxScore = atoi(maxScore);
     return new1;
@@ -62,24 +66,17 @@ void addAccount(Account **head, char *username, char *password, char *position,c
 {
     Account *new1 = newAccount(username, password, position, maxScore);
     Account *current = (*head);
-    //printf("addAccount1\n");
     if (*head == NULL)
     {
-        //printf("addAccount1-1\n");
         (*head) = new1;
     }
     else
     {
-        //printf("addAccount1-2\n");
         while (current->next != NULL){
-            //printf("addAccount1-2-1\n");
             current = current->next;
-            //printf("addAccount1-2-2\n");
         }
-        //printf("addAccount1-2-3\n");
         current->next = new1;
     }
-    //printf("addAccount1-3\n");
 }
 
 void splitAccountFromFile(char *input, char *username, char *password, char *position, char *score)
@@ -143,7 +140,7 @@ void readAccountFromFile(Account **head)
     int maxScore;*/
     char position[5];
     char status[5];
-    //char accountStatus[5];
+    char numTrueAns[10];
     char score[BUFF_SIZE];
     char maxScore[BUFF_SIZE];
     //printf("readAccountFromFile\n");
@@ -177,7 +174,6 @@ void printListAccount(Account **head)
         printf("\n");
     }
 }
-
 
 void signinAccount(Account **head, char *username)
 {
@@ -225,10 +221,49 @@ int checkAccount(Account *head, char *username, char *password)
     return 3;
 }
 
-
 void printInFile(char* username, char* password){
 	FILE *p;
 	p = fopen("account.txt","a");
 	fprintf(p,"\n%s|%s|1|0", username, password);
 	fclose(p);
 }
+
+int TinhTienThuong(Account *head)
+{
+    Account *p=head;
+	int TienThuong = 0, SoCauTraLoiDung=0;
+	//if((*head)->numTrueAns == 1)
+	//	(*head)->score = 200;
+    if(p->numTrueAns==1)
+        TienThuong = 200;
+	if(p->numTrueAns == 2)
+		TienThuong = 400;
+	if(p->numTrueAns == 3)
+		TienThuong = 600;
+	if(p->numTrueAns == 4)
+		TienThuong = 1000;
+	if(p->numTrueAns == 5)
+		TienThuong = 2000;
+	if(p->numTrueAns == 6)
+		TienThuong = 3000;
+	if(p->numTrueAns == 7)
+		TienThuong = 6000;
+	if(p->numTrueAns == 8)
+		TienThuong = 10000;
+	if(p->numTrueAns == 9)
+		TienThuong = 14000;
+	if(p->numTrueAns == 10)
+		TienThuong = 22000;
+	if(p->numTrueAns == 11)
+		TienThuong = 30000;
+	if(p->numTrueAns == 12)
+		TienThuong = 40000;
+	if(p->numTrueAns == 13)
+		TienThuong = 60000;
+	if(p->numTrueAns == 14)
+		TienThuong = 85000;
+	if(p->numTrueAns == 15)
+		TienThuong = 150000;
+	return TienThuong;
+}
+
