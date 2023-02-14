@@ -375,4 +375,66 @@ int sendQuestion(int socket, Question *buff, int size, int flags)
   return n;
 }
 
+int checkInsertLevel(char *str){
+    if((strcmp(str,"EASY")==0) || (strcmp(str,"NORMAL")==0) || (strcmp(str, "HARD")==0))
+        return 1;
+    return 0;
+}
+
+void insertQuestion1(char *question, char *answer1, char *answer2, char *answer3, char *answer4, char *true_ans, char *wrong_ans1, char *wrong_ans2, char *level){
+    printf("\nInsert question: ");
+	memset(question,'\0',(strlen(question)+1));
+	fgets(question, BUFF_SIZE, stdin);	
+	question[strlen(question) - 1] = '\0';
+
+    printf("\nInsert answer1: ");
+	memset(answer1,'\0',(strlen(answer1)+1));
+	fgets(answer1, BUFF_SIZE, stdin);	
+	answer1[strlen(answer1) - 1] = '\0';
+
+    printf("\nInsert answer2: ");
+	memset(answer2,'\0',(strlen(answer2)+1));
+	fgets(answer2, BUFF_SIZE, stdin);
+	answer2[strlen(answer2) - 1] = '\0';
+
+    printf("\nInsert answer3: ");
+	memset(answer3,'\0',(strlen(answer3)+1));
+	fgets(answer3, BUFF_SIZE, stdin);
+	answer3[strlen(answer3) - 1] = '\0';
+
+    printf("\nInsert answer4: ");
+	memset(answer4,'\0',(strlen(answer4)+1));
+	fgets(answer4, BUFF_SIZE, stdin);	
+	answer4[strlen(answer4) - 1] = '\0';
+
+    printf("\nInsert true_ans: ");
+	memset(true_ans,'\0',(strlen(true_ans)+1));
+	fgets(true_ans, BUFF_SIZE, stdin);	
+	true_ans[strlen(true_ans) - 1] = '\0';
+
+    printf("\nInsert wrong_ans1: ");
+	memset(wrong_ans1,'\0',(strlen(wrong_ans1)+1));
+	fgets(wrong_ans1, BUFF_SIZE, stdin);
+	wrong_ans1[strlen(wrong_ans1) - 1] = '\0';
+
+    printf("\nInsert wrong_ans2: ");
+	memset(wrong_ans2,'\0',(strlen(wrong_ans2)+1));
+	fgets(wrong_ans2, BUFF_SIZE, stdin);
+	wrong_ans2[strlen(wrong_ans2) - 1] = '\0';
+
+    do{
+        printf("\nInsert level: ");
+        memset(level,'\0',(strlen(level)+1));
+        fgets(level, BUFF_SIZE, stdin);	
+        level[strlen(level) - 1] = '\0';
+    }while(checkInsertLevel(level)==0);
+
+}
+
+void printQuestionInFile(char *question, char *answer1, char *answer2, char *answer3, char *answer4, char *true_ans, char *wrong_ans1, char *wrong_ans2, char *level){
+	FILE *p;
+	p = fopen("question.txt","a");
+	fprintf(p,"\n1|%s|%s|%s|%s|%s|%s|%s|%s|%s", level, question, answer1, answer2, answer3, answer4, true_ans, wrong_ans1, wrong_ans2);
+	fclose(p);
+}
 

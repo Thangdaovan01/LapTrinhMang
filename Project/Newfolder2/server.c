@@ -25,8 +25,9 @@ void sig_chld(int signo);
 * Receive and echo message to client
 * [IN] sockfd: socket descriptor that connects to client 	
 */
-void ketThuc(int sockfd, Account *acc);
-void player(int sockfd, Question *q, Account *account1);
+void ketThucStop(int sockfd, Account *acc);
+void ketThucWrong(int sockfd, Account *acc);
+void player(int sockfd, Question *question, Account *account1);
 void echo(int sockfd);
 
 int main(int argc, char *argv[]){
@@ -103,31 +104,93 @@ void sig_chld(int signo){
 		printf("\nChild %d terminated\n",pid);
 }
 
-void ketThuc(int sockfd, Account *acc){
+void ketThucStop(int sockfd, Account *acc){
 	Response *response = (Response *)malloc(sizeof(Response));
 	
 	int tienThuong = TinhTienThuong(acc);
 	response->code = 14;
 	setMessageResponse(response);
 	response->tienThuong = tienThuong;
-	printf("Mess: %s Tien: %d\n", response->message, response->tienThuong);
+	response->socaudung = acc->numTrueAns;
+	printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
 	sendResponse(sockfd, response, sizeof(Response),0);
 				
 }
 
-void player(int sockfd, Question *q, Account *account1){
+void ketThucWrong(int sockfd, Account *acc){
+	Response *response = (Response *)malloc(sizeof(Response));
+	
+	int tienThuong = TinhTienThuong2(acc);
+	response->code = 14;
+	setMessageResponse(response);
+	response->tienThuong = tienThuong;
+	response->socaudung = acc->numTrueAns;
+	printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
+	sendResponse(sockfd, response, sizeof(Response),0);
+				
+}
+
+void player(int sockfd, Question *question, Account *account1){
 	Request *request = (Request *)malloc(sizeof(Request));
     Response *response = (Response *)malloc(sizeof(Response));
-	Question *q1 = NULL;
-	int countEasy=0, checkAns, tienThuong;
+	Question *q = NULL;
+	Question *q1 = question;
+	Question *q2 = question;
+	Question *q3 = question;
+	int countEasy=0, countNormal=0, countHard = 0, checkAns, tienThuong;
 	
-	while((q!=NULL) && (countEasy<5)){
-		if(strcmp(q->level, "EASY")==0){
-			q1 = q;
-			sendQuestion(sockfd, q1, sizeof(Question),0);
+	while((q1!=NULL) && (countEasy<5)){
+		if(strcmp(q1->level, "EASY")==0){
+			q = q1;
+			sendQuestion(sockfd, q, sizeof(Question),0);
+			countEasy++;
+			do{
+				receiveRequest(sockfd, request, sizeof(Request), 0);
+				printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
+			
+				if(strcmp(request->answer,"H")==0){
+					//CODE
+					response->code = 12;
+					strcpy(response->data, "Dap an sai la: ");
+					sendResponse(sockfd, response, sizeof(Response),0);
+					
+				}
+			}while(checkAnswer2(request->answer)==0);
+			
+			if(strcmp(request->answer,"S")==0){
+				//CODE
+				printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
+				printf("Account Stop\n");
+				ketThucStop(sockfd, account1);
+			}else{
+				checkAns = checkAnswer1(q, request->answer);
+				printf("request Ans: %s - checkAns: %d\n",request->answer,checkAns);
+				response->code=checkAns;
+				setMessageResponse(response);
+				printf("Mess: %s\n", response->message);
+				sendResponse(sockfd, response, sizeof(Response),0);
+						
+				if(checkAns == 6){ //true answer
+					account1->numTrueAns++;
+				}else{
+					printf("Wrong answer\n");
+					printf("Num of Answer: %d\n", account1->numTrueAns);
+					ketThucWrong(sockfd, account1);
+					break;
+				} 
+			}
+					
+		}
+		q1 = q1->next;
+	}
+
+	while((q2!=NULL) && (countNormal<5)){
+		if(strcmp(q2->level, "NORMAL")==0){
+			//q1 = q;
+			sendQuestion(sockfd, q2, sizeof(Question),0);
 			//receiveRequest(sockfd, request, sizeof(Request), 0);
 			//printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
-			countEasy++;
+			countNormal++;
 			do{
 				receiveRequest(sockfd, request, sizeof(Request), 0);
 				printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
@@ -144,9 +207,9 @@ void player(int sockfd, Question *q, Account *account1){
 				//CODE
 				printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
 				printf("Account Stop\n");
-				ketThuc(sockfd, account1);
+				ketThucStop(sockfd, account1);
 			}else{
-				checkAns = checkAnswer1(q1, request->answer);
+				checkAns = checkAnswer1(q2, request->answer);
 				printf("checkAns: %d\n",checkAns);
 				response->code=checkAns;
 				setMessageResponse(response);
@@ -158,14 +221,61 @@ void player(int sockfd, Question *q, Account *account1){
 				}else{
 					printf("Wrong answer\n");
 					printf("Num of Answer: %d\n", account1->numTrueAns);
-					ketThuc(sockfd, account1);
+					ketThucWrong(sockfd, account1);
 					break;
 				} 
 			}
 					
 		}
-		q = q->next;
+		q2 = q2->next;
 	}
+
+	while((q3!=NULL) && (countHard<5)){
+		if(strcmp(q3->level, "HARD")==0){
+			//q1 = q;
+			sendQuestion(sockfd, q3, sizeof(Question),0);
+			//receiveRequest(sockfd, request, sizeof(Request), 0);
+			//printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
+			countHard++;
+			do{
+				receiveRequest(sockfd, request, sizeof(Request), 0);
+				printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
+			
+				if(strcmp(request->answer,"H")==0){
+					//CODE
+					response->code = 12;
+					strcpy(response->data, "Dap an sai la: ");
+					sendResponse(sockfd, response, sizeof(Response),0);
+					
+				}
+			}while(checkAnswer2(request->answer)==0);
+			if(strcmp(request->answer,"S")==0){
+				//CODE
+				printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
+				printf("Account Stop\n");
+				ketThucStop(sockfd, account1);
+			}else{
+				checkAns = checkAnswer1(q3, request->answer);
+				printf("checkAns: %d\n",checkAns);
+				response->code=checkAns;
+				setMessageResponse(response);
+				printf("Mess: %s\n", response->message);
+				sendResponse(sockfd, response, sizeof(Response),0);
+						
+				if(checkAns == 6){ //true answer
+					account1->numTrueAns++;
+				}else{
+					printf("Wrong answer\n");
+					printf("Num of Answer: %d\n", account1->numTrueAns);
+					ketThucWrong(sockfd, account1);
+					break;
+				} 
+			}
+					
+		}
+		q3 = q3->next;
+	}
+	
 }
 
 void echo(int sockfd) {
@@ -188,16 +298,23 @@ void echo(int sockfd) {
 	int bytes_sent, bytes_received, bytes_received1, checkAcc, checkAns;
 	while(1){
 		readAccountFromFile(&account);
-		//printListAccount(&account);
 		receiveRequest(sockfd, request, sizeof(Request), 0);
-		request->username[strlen(request->username)]='\0';
-		printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
+		
+		//printListAccount(&account);
+		//receiveRequest(sockfd, request, sizeof(Request), 0);
+		//request->username[strlen(request->username)]='\0';
+		//printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
 		//if(request->code == 3)
 		switch (request->code)
 		{
 		case 1:
+			receiveRequest(sockfd, request, sizeof(Request), 0);
+			request->username[strlen(request->username)]='\0';
+			printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
+				
 			do{
 				/* code */
+				
 				//printListAccount(&account);
 				checkAcc = checkAccount(account,request->username, request->pass);
 				printf("checkAcc: %d\n",checkAcc);
@@ -222,60 +339,48 @@ void echo(int sockfd) {
 				break;
 			}
 
-			switch (account1->position)
+			//switch (account1->position)
+			if(account1->position==0) 
 			{
-				case 0:
-					printf("ADMIN\n");
-					/* code */
-					break;
-				
-				case 1:
-					printf("PLAYER\n");
-					/* code */
-					player(sockfd,q,account1);
-					// function: void player(int sockfd, Question *q, Account *acc
-					/*while((q!=NULL) && (countEasy<5)){
-						if(strcmp(q->level, "EASY")==0){
-							q1 = q;
-							sendQuestion(sockfd, q1, sizeof(Question),0);
-							receiveRequest(sockfd, request, sizeof(Request), 0);
-							printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
-							countEasy++;
 
-							if(strcmp(request->answer,"S")==0){
-								//CODE
-							}else if(strcmp(request->answer,"H")==0){
-								//CODE
-							}else{
-								checkAns = checkAnswer1(q1, request->answer);
-								printf("checkAns: %d\n",checkAns);
-								response->code=checkAns;
-								setMessageResponse(response);
-								printf("Mess: %s\n", response->message);
-								sendResponse(sockfd, response, sizeof(Response),0);
-								
-								if(checkAns == 6){ //true answer
-									account1->numTrueAns++;
-								}else{
-									printf("Wrong answer\n");
-									printf("Num of Answer: %d\n", account1->numTrueAns);
-									break;
-								} 
-							}
-							
-						}
-						q = q->next;
-					}*/
-					//while((q!=NULL) && countEasy<5){
-					//	q1 = exportQuestion(q,"EASY");
-					//	sendQuestion(sockfd, q1, sizeof(Question),0);
+				//case 0:
+				while(1){
+					//printf("ADMIN\n");
+					receiveRequest(sockfd, request, sizeof(Request), 0);
+					//if(request->code==17){ //BREAK_MENU
+					//	printf("ADMIN BREAK\n");
+					//	break;
 					//}
-					break;
+					if(request->code==7){ //neu yeu cau nhap cau hoi
+						receiveRequestQuestion(sockfd, reQuestion1, sizeof(RequestQuestion), 0);
+						printf("Question: %s\n",reQuestion1->question);
+						printf("answer1: %s\n",reQuestion1->answer1);
+						printf("answer2: %s\n",reQuestion1->answer2);
+						printf("answer3: %s\n",reQuestion1->answer3);
+						printf("answer4: %s\n",reQuestion1->answer4);
+						printf("True answer: %s\n",reQuestion1->true_ans);
+						printf("Wrong answer1: %s\n",reQuestion1->wrong_ans1);
+						printf("Wrong answer2: %s\n",reQuestion1->wrong_ans2);
+						printf("Level: %s\n",reQuestion1->level);
+						printQuestionInFile(reQuestion1->question,reQuestion1->answer1, reQuestion1->answer2,reQuestion1->answer3,reQuestion1->answer4,reQuestion1->true_ans,reQuestion1->wrong_ans1,reQuestion1->wrong_ans2,reQuestion1->level);
+					}else{
+						printf("ADMIN BREAK\n");
+						break;
+					}
+				}
 
-				default:
-					break;
-			}
-			
+			}else if(account1->position==1){
+				printf("PLAYER\n");
+					
+				receiveRequest(sockfd, request, sizeof(Request), 0);
+				if(request->code==10){ //neu yeu cau gui cau tra loi
+					player(sockfd,q,account1);
+				}
+				if(request->code==5){ //neu yeu cau xem bang xep hang
+						
+				}
+			}	//break;
+							
 			break;
 			
 		case 2:

@@ -267,3 +267,43 @@ int TinhTienThuong(Account *head)
 	return TienThuong;
 }
 
+int TinhTienThuong2(Account *head)
+{
+    Account *p=head;
+	int TienThuong = 0, SoCauTraLoiDung=0;
+	//if((*head)->numTrueAns == 1)
+	//	(*head)->score = 200;
+    if(p->numTrueAns==1)
+        TienThuong = 0;
+	if(p->numTrueAns == 2)
+		TienThuong = 0;
+	if(p->numTrueAns == 3)
+		TienThuong = 0;
+	if(p->numTrueAns == 4)
+		TienThuong = 0;
+	if(p->numTrueAns == 5)
+		TienThuong = 2000;
+	if(p->numTrueAns == 6)
+		TienThuong = 2000;
+	if(p->numTrueAns == 7)
+		TienThuong = 2000;
+	if(p->numTrueAns == 8)
+		TienThuong = 2000;
+	if(p->numTrueAns == 9)
+		TienThuong = 2000;
+	if(p->numTrueAns == 10)
+		TienThuong = 22000;
+	if(p->numTrueAns == 11)
+		TienThuong = 22000;
+	if(p->numTrueAns == 12)
+		TienThuong = 22000;
+	if(p->numTrueAns == 13)
+		TienThuong = 22000;
+	if(p->numTrueAns == 14)
+		TienThuong = 22000;
+	if(p->numTrueAns == 15)
+		TienThuong = 150000;
+	return TienThuong;
+}
+
+

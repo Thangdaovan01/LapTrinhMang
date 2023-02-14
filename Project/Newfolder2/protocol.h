@@ -11,6 +11,9 @@ typedef enum
     HELP = 04,
     SHOWRANKTABLE = 05,
     STOPGAME = 06,
+    ADD_QUESTION = 07,
+    REQUEST_TO_CHOOSE_ANSWER = 10,
+    BREAK_MENU = 11,
 } OPCODE;
 
 typedef enum
@@ -70,6 +73,7 @@ typedef struct
     char message[50];
     char data[50];
     int tienThuong;
+    int socaudung;
     //char position[5];
 } Response;
 
