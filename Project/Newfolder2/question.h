@@ -325,14 +325,8 @@ void xuatMotDanhSachCauHoi(Question *head)
 int checkAnswer1(Question *head, char *answer)
 {
     Question *ptr = head;
-    //int i = 0;
-    //for (ptr = head; ptr != NULL; ptr = ptr->next)
-    //{
-    //    printf("checkAnswer1-true answer: %s \n",ptr->true_ans);
-    //    printf("checkAnswer1-answer: %s \n",answer);
-        if (strcmp(ptr->true_ans,answer)==0)
-            return 6;
-   // }
+    if (strcmp(ptr->true_ans,answer)==0)
+        return 6;
     return 7;
 }
 

@@ -153,9 +153,17 @@ void player(int sockfd, Question *question, Account *account1){
 				if(strcmp(request->answer,"H")==0){
 					//CODE
 					response->code = 12;
-					strcpy(response->data, "Dap an sai la: ");
+					//printf("NumHelp: %d\n",account1->numHelp);
+					if(account1->numHelp > 0){
+						strcpy(response->data, "Dap an sai la: ");
+						strcat(response->data, q->wrong_ans1);
+						strcat(response->data, " va ");
+						strcat(response->data, q->wrong_ans2);	
+					}else{
+						strcpy(response->data, "Da het quyen tro giup");
+					}
 					sendResponse(sockfd, response, sizeof(Response),0);
-					
+					account1->numHelp = account1->numHelp-1;
 				}
 			}while(checkAnswer2(request->answer)==0);
 			
@@ -188,21 +196,26 @@ void player(int sockfd, Question *question, Account *account1){
 
 	while((q2!=NULL) && (countNormal<5)){
 		if(strcmp(q2->level, "NORMAL")==0){
-			//q1 = q;
 			sendQuestion(sockfd, q2, sizeof(Question),0);
-			//receiveRequest(sockfd, request, sizeof(Request), 0);
-			//printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
 			countNormal++;
 			do{
+				//Nhan dap an tu client
 				receiveRequest(sockfd, request, sizeof(Request), 0);
 				printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
-			
+				printf("True ANswer: %s\n", q2->true_ans);
 				if(strcmp(request->answer,"H")==0){
 					//CODE
 					response->code = 12;
-					strcpy(response->data, "Dap an sai la: ");
+					if(account1->numHelp > 0){
+						strcpy(response->data, "Dap an sai la: ");
+						strcat(response->data, q2->wrong_ans1);
+						strcat(response->data, " va ");
+						strcat(response->data, q2->wrong_ans2);	
+					}else{
+						strcpy(response->data, "Da het quyen tro giup");
+					}
 					sendResponse(sockfd, response, sizeof(Response),0);
-					
+					account1->numHelp = account1->numHelp-1;
 				}
 			}while(checkAnswer2(request->answer)==0);
 			if(strcmp(request->answer,"S")==0){
@@ -234,10 +247,8 @@ void player(int sockfd, Question *question, Account *account1){
 
 	while((q3!=NULL) && (countHard<5)){
 		if(strcmp(q3->level, "HARD")==0){
-			//q1 = q;
+			//q = q3;
 			sendQuestion(sockfd, q3, sizeof(Question),0);
-			//receiveRequest(sockfd, request, sizeof(Request), 0);
-			//printf("CODE: %d - ANSWER: %s\n", request->code, request->answer);
 			countHard++;
 			do{
 				receiveRequest(sockfd, request, sizeof(Request), 0);
@@ -246,9 +257,16 @@ void player(int sockfd, Question *question, Account *account1){
 				if(strcmp(request->answer,"H")==0){
 					//CODE
 					response->code = 12;
-					strcpy(response->data, "Dap an sai la: ");
+					if(account1->numHelp > 0){
+						strcpy(response->data, "Dap an sai la: ");
+						strcat(response->data, q3->wrong_ans1);
+						strcat(response->data, " va ");
+						strcat(response->data, q3->wrong_ans2);	
+					}else{
+						strcpy(response->data, "Da het quyen tro giup");
+					}
 					sendResponse(sockfd, response, sizeof(Response),0);
-					
+					account1->numHelp = account1->numHelp-1;
 				}
 			}while(checkAnswer2(request->answer)==0);
 			if(strcmp(request->answer,"S")==0){
@@ -373,7 +391,7 @@ void echo(int sockfd) {
 
 			}else if(account1->position==1){
 				printf("PLAYER\n");
-					
+				account1->numHelp = 3;
 				receiveRequest(sockfd, request, sizeof(Request), 0);
 				if(request->code==10){ //neu yeu cau gui cau tra loi
 					player(sockfd,q,account1);
