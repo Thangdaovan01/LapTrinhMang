@@ -22,9 +22,9 @@ typedef struct account
     //int accountStatus; //1: active     0: blocked
     //int countSignIn;
     int numHelp;
-    int numTrueAns;
+    int numTrueAns; //so cau tra loi dung
     int score;
-    int maxScore;
+    int maxScore; //so diem cao nhat
     struct account *next;
 }Account;
 
@@ -150,9 +150,7 @@ void readAccountFromFile(Account **head)
             break;
         fgets(input, BUFF_SIZE, fin);
         splitAccountFromFile(input, username, password, position, maxScore);
-        //printf("readAccountFromFile\n");
         addAccount(head, username, password, position, maxScore);
-        //printf("addAccount2\n");
     }
     fclose(fin);
 }
@@ -161,6 +159,7 @@ void readAccountFromFile(Account **head)
 void printListAccount(Account **head)
 {
     printf("printListAccount\n");
+    *head = (*head)->next;
     Account *ptr = NULL;
     for (ptr = *head; ptr != NULL; ptr = ptr->next)
     {
@@ -306,4 +305,23 @@ int TinhTienThuong2(Account *head)
 	return TienThuong;
 }
 
-
+void updateAccountList(Account *acc, int score){
+    Account *account = (Account *)malloc(sizeof(Account));
+    readAccountFromFile(&account);
+    Account *ptr = NULL;
+    FILE *p;
+    p=fopen("account.txt","w");
+    
+    if(acc->maxScore<score){
+        acc->maxScore = score;
+    }
+    fprintf(p,"%s|%s|%d|%d", acc->username, acc->password, acc->position, acc->maxScore);
+    
+    for(ptr = account->next; ptr!= NULL; ptr = ptr->next){
+        if(strcmp(ptr->username, acc->username)!=0){
+            fprintf(p,"\n%s|%s|%d|%d", ptr->username, ptr->password, ptr->position, ptr->maxScore);
+        } 
+        
+    }
+    fclose(p);
+}

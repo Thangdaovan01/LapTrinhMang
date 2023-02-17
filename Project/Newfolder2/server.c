@@ -112,6 +112,7 @@ void ketThucStop(int sockfd, Account *acc){
 	setMessageResponse(response);
 	response->tienThuong = tienThuong;
 	response->socaudung = acc->numTrueAns;
+	updateAccountList(acc, acc->numTrueAns);
 	printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
 	sendResponse(sockfd, response, sizeof(Response),0);
 				
@@ -125,6 +126,7 @@ void ketThucWrong(int sockfd, Account *acc){
 	setMessageResponse(response);
 	response->tienThuong = tienThuong;
 	response->socaudung = acc->numTrueAns;
+	updateAccountList(acc, acc->numTrueAns);
 	printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
 	sendResponse(sockfd, response, sizeof(Response),0);
 				

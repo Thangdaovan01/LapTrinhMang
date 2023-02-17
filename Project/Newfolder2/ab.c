@@ -2,6 +2,8 @@
 #include<stdlib.h>
 #include<string.h>
 
+#include "account.h"
+
 #define BUFF_SIZE 1024
 int checkAnswer2(char *answer1){
     if((strcmp(answer1,"A")==0) || (strcmp(answer1,"B")==0) || (strcmp(answer1,"C")==0) || (strcmp(answer1,"D")==0) || (strcmp(answer1,"H")==0) || (strcmp(answer1,"S")==0)){
@@ -66,19 +68,99 @@ void insertQuestion1(char *question, char *answer1, char *answer2, char *answer3
 
 }
 
+Account *deleteAccount(Account *acc, char *str){
+    Account *p = acc;
+    Account *p1= NULL;
+
+    if(acc == NULL) return NULL;
+    while(strcmp(p->username,str)!=0){
+        if(p->next == NULL) return NULL;
+        else{
+            p1 = p;
+            //p = p->next;
+        }
+        p = p->next;
+    }
+    /*while(p!=NULL){
+        if(strcmp(p->username,str)!=0){
+            p1 = p;
+            p=p->next;
+        }
+    }*/
+    //printListAccount(&p);
+    if(p==acc){
+        p = p->next;
+    }else{
+        p1->next = p->next;
+    }
+    return p;
+}
+
+Account *findMaxScore(Account *account1){
+    //Account *account1 = (Account *)malloc(sizeof(Account));
+    //readAccountFromFile(&account1);
+    //printListAccount(&account1);
+    Account *acc = NULL;
+    Account *acc1 = account1->next;
+    for(acc = account1->next; acc!=NULL; acc=acc->next){
+        if(acc->maxScore > acc1->maxScore){
+            acc1 = acc;
+        }
+    }
+    printf("A\n\n");
+    return acc1;
+}
+
+void xepHangTop10(){
+    Account *account1 = (Account *)malloc(sizeof(Account));
+    readAccountFromFile(&account1);
+    Account *acc=NULL;
+    //printListAccount(&account1);
+    int i=0;
+    for(i=0; i<5; i++){
+        acc = findMaxScore(account1);
+        printf("Username: %s\n", acc->username);
+        printf("Pass: %s\n", acc->password);
+        printf("Max Score: %d\n", acc->maxScore);
+        
+        account1 = deleteAccount(account1, acc->username);
+    } 
+}
+
 int main(){
-    
-    char question[BUFF_SIZE], answer1[BUFF_SIZE], answer2[BUFF_SIZE], answer3[BUFF_SIZE], answer4[BUFF_SIZE], level[10],  true_ans[5], wrong_ans1[5], wrong_ans2[5];
-	
-    insertQuestion1(question,answer1, answer2,answer3,answer4,true_ans,wrong_ans1,wrong_ans2,level);
-    printf("Question: %s\n",question);
-    printf("answer1: %s\n",answer1);
-    printf("answer2: %s\n",answer2);
-    printf("answer3: %s\n",answer3);
-    printf("answer4: %s\n",answer4);
-    printf("True answer: %s\n",true_ans);
-    printf("Wrong answer1: %s\n",wrong_ans1);
-    printf("Wrong answer2: %s\n",wrong_ans2);
-    printf("Level: %s\n",level);
+    Account *account1 = (Account *)malloc(sizeof(Account));
+    readAccountFromFile(&account1);
+    //printListAccount(&account1);
+    Account *acc = NULL;
+
+    //xepHangTop10();
+    acc = findMaxScore(account1);
+    printf("Username: %s\n", acc->username);
+    printf("Pass: %s\n", acc->password);
+    printf("Max Score: %d\n", acc->maxScore);
+    account1 = deleteAccount(account1, acc->username);
+//    printListAccount(&account1);
+
+    acc = findMaxScore(account1);
+    printf("Username: %s\n", acc->username);
+    printf("Pass: %s\n", acc->password);
+    printf("Max Score: %d\n", acc->maxScore);
+    account1 = deleteAccount(account1, acc->username);
+//    printListAccount(&account1);
+
+    acc = findMaxScore(account1);
+    printf("Username: %s\n", acc->username);
+    printf("Pass: %s\n", acc->password);
+    printf("Max Score: %d\n", acc->maxScore);
+    account1 = deleteAccount(account1, acc->username);
+//    printListAccount(&account1);
+/*
+    acc = findMaxScore(account1);
+    printf("Username: %s\n", acc->username);
+    printf("Pass: %s\n", acc->password);
+    printf("Max Score: %d\n", acc->maxScore);
+    account1 = deleteAccount(account1, acc->username);
+    printListAccount(&account1);
+*/   
     return 0;			
 }

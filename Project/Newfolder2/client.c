@@ -80,25 +80,18 @@ int main(int argc, char *argv[]){
 					printf("\nInsert username: ");
 					memset(username,'\0',(strlen(username)+1));
 					fgets(username, BUFF_SIZE, stdin);	
-					//scanf("%s",username);	
-					//msg_len = strlen(username);
 					username[strlen(username)-1] = '\0';
-					//printf("Username: %s\n", username);
 					
 					printf("\nInsert password: ");
 					memset(password,'\0',(strlen(password)+1));
 					fgets(password, BUFF_SIZE, stdin);	
-					//scanf("%s",password);	
-					//msg_len = strlen(password);
 					password[strlen(password)-1] = '\0';
-					//printf("password: %s\n", password);
 					
 					request->code = 01;
 					strcpy(request->username, username);
 					strcpy(request->pass, password);
 					sendRequest(client_sock, request, sizeof(Request), 0);
-					/* code */
-
+					
 					receiveResponse(client_sock, response, sizeof(Response),0);
 					printf("%s\n", response->message);
 				}while(response->code != 1);
@@ -205,8 +198,7 @@ int main(int argc, char *argv[]){
 							//sendRequest(client_sock, request, sizeof(Request), 0);
 							break;
 						} 
-					}
-					
+					}					
 				}
 				break;
 
