@@ -183,9 +183,11 @@ void signinAccount(Account **head, char *username)
 int checkUsername(Account *head, char *username)
 {
     Account *p = head;
+    int i;
     while(p!=NULL){
         if(strcmp(p->username, username)==0)
             return 5;
+            //i=5;
         p=p->next; 
     }
     return 4;

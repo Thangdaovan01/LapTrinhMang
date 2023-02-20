@@ -10,3 +10,5 @@ test5|123|1|4
 umihara|123|1|1
 admin|123|0|0
 shinichi|123|1|8
+phu|123|1|0
+nghia|123|1|0

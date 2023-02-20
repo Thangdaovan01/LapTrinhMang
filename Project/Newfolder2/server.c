@@ -328,12 +328,11 @@ void echo(int sockfd) {
 		switch (request->code)
 		{
 		case 1:
-			receiveRequest(sockfd, request, sizeof(Request), 0);
-			request->username[strlen(request->username)]='\0';
-			printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
 				
 			do{
-				/* code */
+				receiveRequest(sockfd, request, sizeof(Request), 0);
+				request->username[strlen(request->username)]='\0';
+				printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
 				
 				//printListAccount(&account);
 				checkAcc = checkAccount(account,request->username, request->pass);
@@ -344,6 +343,7 @@ void echo(int sockfd) {
 				sendResponse(sockfd, response, sizeof(Response),0);
 				printf("Position: %d\n",account->position);
 			}while(checkAcc!=1);	
+
 			account1 = findUserNameAccount(&account, request->username);
 			account1->status = 1;
 			printf("Username: %s - Position: %d - Status: %d - Score: %d - MaxScore: %d - Num: %d\n",account1->username, account1->position, account1->status, account1->score, account1->maxScore, account1->numTrueAns);
@@ -404,17 +404,23 @@ void echo(int sockfd) {
 			break;
 			
 		case 2:
+			
+			//readAccountFromFile(&account);
 			do{
-				printListAccount(&account);
-				printf("%s\n",request->username);
+				receiveRequest(sockfd, request, sizeof(Request), 0);
+				request->username[strlen(request->username)]='\0';
+				printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
+				
+				//printListAccount(&account);
+				//printf("%s\n",request->username);
 				checkAcc = checkUsername(account,request->username);
-				printf("%d\n",checkAcc);
+				printf("checkAcc: %d\n",checkAcc);
 				response->code=checkAcc;
 				setMessageResponse(response);
 				printf("%s\n", response->message);
 				sendResponse(sockfd, response, sizeof(Response),0);
 			}while(checkAcc!=4);
-			printInFile(request->username, request->pass);
+			if(checkAcc ==4) printInFile(request->username, request->pass);
 			//readAccountFromFile(&account);	
 			break;
 		

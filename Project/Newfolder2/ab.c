@@ -131,7 +131,7 @@ int main(){
     Account *account1 = (Account *)malloc(sizeof(Account));
     readAccountFromFile(&account1);
     //printListAccount(&account1);
-    Account *acc = NULL;
+/*    Account *acc = NULL;
 
     //xepHangTop10();
     acc = findMaxScore(account1);
@@ -153,7 +153,7 @@ int main(){
     printf("Pass: %s\n", acc->password);
     printf("Max Score: %d\n", acc->maxScore);
     account1 = deleteAccount(account1, acc->username);
-//    printListAccount(&account1);
+//    printListAccount(&account1);*/
 /*
     acc = findMaxScore(account1);
     printf("Username: %s\n", acc->username);
@@ -162,5 +162,16 @@ int main(){
     account1 = deleteAccount(account1, acc->username);
     printListAccount(&account1);
 */   
+char username[50];
+int checkAcc;
+do{
+    printf("\nInsert username to sign up: ");
+	memset(username,'\0',(strlen(username)+1));
+	fgets(username, BUFF_SIZE, stdin);	
+	username[strlen(username)-1] = '\0';
+    checkAcc = checkUsername(account1,username);
+    printf("checkAcc: %d\n",checkAcc);
+}while(checkAcc!=4);
+
     return 0;			
 }

@@ -206,17 +206,13 @@ int main(int argc, char *argv[]){
 				do{
 					printf("\nInsert username to sign up: ");
 					memset(username,'\0',(strlen(username)+1));
-					//fgets(username, BUFF_SIZE, stdin);	
-					scanf("%s",username);	
-					msg_len = strlen(username);
-					username[msg_len] = '\0';
+					fgets(username, BUFF_SIZE, stdin);	
+					username[strlen(username)-1] = '\0';
 
 					printf("\nInsert password to sign up: ");
 					memset(password,'\0',(strlen(password)+1));
-					//fgets(password, BUFF_SIZE, stdin);	
-					scanf("%s",password);	
-					msg_len = strlen(password);
-					password[msg_len] = '\0';
+					fgets(password, BUFF_SIZE, stdin);	
+					password[strlen(password)-1] = '\0';
 
 					request->code = 02;
 					strcpy(request->username, username);
