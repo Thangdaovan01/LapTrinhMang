@@ -74,6 +74,9 @@ typedef struct
     char data[50];
     int tienThuong;
     int socaudung;
+    int rank;
+    char username[50];
+    int maxScore;
     //char position[5];
 } Response;
 

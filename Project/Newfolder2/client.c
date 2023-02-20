@@ -172,7 +172,16 @@ int main(int argc, char *argv[]){
 							count++;
 						}
 						break;
-					
+					case 2: //xem bang xep hang
+						request->code=5;
+						sendRequest(client_sock, request, sizeof(Request), 0);
+
+						for(int i=0; i<10; i++){
+							receiveResponse(client_sock, response, sizeof(Response),0);
+							printf("Top %d - Username: %s - Max Score: %d\n",response->rank,response->username,response->maxScore);		
+						}
+						break;
+
 					default:
 						break;
 					}

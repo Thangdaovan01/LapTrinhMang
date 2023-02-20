@@ -27,6 +27,7 @@ void sig_chld(int signo);
 */
 void ketThucStop(int sockfd, Account *acc);
 void ketThucWrong(int sockfd, Account *acc);
+void xemBangXepHang(int sockfd);
 void player(int sockfd, Question *question, Account *account1);
 void echo(int sockfd);
 
@@ -130,6 +131,27 @@ void ketThucWrong(int sockfd, Account *acc){
 	printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
 	sendResponse(sockfd, response, sizeof(Response),0);
 				
+}
+
+void xemBangXepHang(int sockfd){
+	Account *account1 = (Account *)malloc(sizeof(Account));
+    readAccountFromFile(&account1);
+    Account *acc=NULL;
+    Response *response = (Response *)malloc(sizeof(Response));
+	
+    int i=0;
+    for(i=0; i<10; i++){
+        acc = findMaxScore(account1);
+        printf("Username: %s\n", acc->username);
+        printf("Pass: %s\n", acc->password);
+        printf("Max Score: %d\n", acc->maxScore);
+        response->rank = i+1;
+		strcpy(response->username, acc->username);
+		response->maxScore = acc->maxScore;
+		sendResponse(sockfd, response, sizeof(Response),0);
+        deleteAcc(&account1, acc->username);
+    } 
+    
 }
 
 void player(int sockfd, Question *question, Account *account1){
@@ -320,20 +342,15 @@ void echo(int sockfd) {
 		readAccountFromFile(&account);
 		receiveRequest(sockfd, request, sizeof(Request), 0);
 		
-		//printListAccount(&account);
-		//receiveRequest(sockfd, request, sizeof(Request), 0);
-		//request->username[strlen(request->username)]='\0';
-		//printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
-		//if(request->code == 3)
 		switch (request->code)
 		{
 		case 1:
 				
 			do{
+				//nhan request bao gom username, password tu phia client
 				receiveRequest(sockfd, request, sizeof(Request), 0);
 				request->username[strlen(request->username)]='\0';
 				printf("username: %s - password: %s - opcode: %d \n", request->username, request->pass, request->code);
-				
 				//printListAccount(&account);
 				checkAcc = checkAccount(account,request->username, request->pass);
 				printf("checkAcc: %d\n",checkAcc);
@@ -367,10 +384,7 @@ void echo(int sockfd) {
 				while(1){
 					//printf("ADMIN\n");
 					receiveRequest(sockfd, request, sizeof(Request), 0);
-					//if(request->code==17){ //BREAK_MENU
-					//	printf("ADMIN BREAK\n");
-					//	break;
-					//}
+					
 					if(request->code==7){ //neu yeu cau nhap cau hoi
 						receiveRequestQuestion(sockfd, reQuestion1, sizeof(RequestQuestion), 0);
 						printf("Question: %s\n",reQuestion1->question);
@@ -397,7 +411,7 @@ void echo(int sockfd) {
 					player(sockfd,q,account1);
 				}
 				if(request->code==5){ //neu yeu cau xem bang xep hang
-						
+					xemBangXepHang(sockfd);	
 				}
 			}	//break;
 							

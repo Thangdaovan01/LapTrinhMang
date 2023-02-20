@@ -307,6 +307,7 @@ int TinhTienThuong2(Account *head)
 	return TienThuong;
 }
 
+//update lai khi co maxScore moi
 void updateAccountList(Account *acc, int score){
     Account *account = (Account *)malloc(sizeof(Account));
     readAccountFromFile(&account);
@@ -325,5 +326,63 @@ void updateAccountList(Account *acc, int score){
         } 
         
     }
+    fclose(p);
+}
+
+
+void deleteAcc(Account **head, char *str)
+{
+    Account *tmp;
+    Account *result = findUserNameAccount(head, str);
+    Account *current;
+    if (*head == result)
+    {
+        current = *head;
+        *head = (*head)->next;
+    }
+    else
+        for (tmp = *head; tmp != NULL; tmp = tmp->next)
+        {
+            if (tmp->next == result)
+            {
+                current = tmp->next;
+                tmp->next = current->next;
+            }
+        }
+    free(current);
+}
+
+Account *findMaxScore(Account *account1){
+    //Account *account1 = (Account *)malloc(sizeof(Account));
+    //readAccountFromFile(&account1);
+    //printListAccount(&account1);
+    Account *acc = NULL;
+    Account *acc1 = account1->next;
+    for(acc = account1->next; acc!=NULL; acc=acc->next){
+        if(acc->maxScore > acc1->maxScore){
+            acc1 = acc;
+        }
+    }
+    //printf("A\n\n");
+    return acc1;
+}
+
+void xepHangTop10(){
+    Account *account1 = (Account *)malloc(sizeof(Account));
+    readAccountFromFile(&account1);
+    Account *acc=NULL;
+    FILE *p;
+    p=fopen("xephang.txt","w");
+    //printListAccount(&account1);
+    int i=0;
+    for(i=0; i<10; i++){
+        acc = findMaxScore(account1);
+        printf("Username: %s\n", acc->username);
+        printf("Pass: %s\n", acc->password);
+        printf("Max Score: %d\n", acc->maxScore);
+        fprintf(p,"%d|%s|%d\n",i+1, acc->username, acc->maxScore);
+    
+        deleteAcc(&account1, acc->username);
+    } 
     fclose(p);
 }
