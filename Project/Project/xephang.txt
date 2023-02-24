@@ -1,0 +1,10 @@
+1|nghia|20
+2|shinichi|18
+3|nga|13
+4|thang|9
+5|test3|7
+6|test1|5
+7|test2|5
+8|test5|4
+9|test4|3
+10|toan|2

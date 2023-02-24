@@ -28,16 +28,18 @@ typedef enum
     LOGIN_SUCCESS = 01,
     USERNAME_NOT_EXISTED = 02,
     PASSWORD_INCORRECT = 03,
+
     SIGNIN_SUCCESS = 04,
     USERNAME_EXISTED = 05,
+
     TRUE_ANSWER = 06,
     WRONG_ANSWER = 07,
     INVALID_ANSWER = 10,
+
     NO_MORE_HELP = 11,
     HELP_SUCCESS = 12,
+
     END_OF_GAME = 14,
-    USER_ONLINE = 15,
-    ADD_QUESTION_SUCCESS = 16,
 } MESSAGE_STATUS;
 
 typedef struct
@@ -170,14 +172,8 @@ void setMessageResponse(Response *msg)
     case HELP_SUCCESS:
       strcpy(msg->message, "HELP SUCCESS");
       break;
-    case USER_ONLINE:
-      strcpy(msg->message, "USER LOGGED IN");
-      break;
     case END_OF_GAME:
       strcpy(msg->message, "END GAME");
-      break;
-    case ADD_QUESTION_SUCCESS:
-      strcpy(msg->message, "ADD QUESTION SUCCESS");
       break;
     default:
       strcpy(msg->message, "Exception ");
@@ -185,7 +181,6 @@ void setMessageResponse(Response *msg)
     }
   //}
 }
-
 /*
 void readMessageResponse(Response *msg)
 {

@@ -46,12 +46,12 @@ Account *findUserNameAccount(Account **head, char *username)
     return NULL;
 }
 //create node
-Account *newAccount(char *username, char *password, char *position, char *maxScore, char *status)
+Account *newAccount(char *username, char *password, char *position, char *maxScore)
 {
     Account *new1 = (Account *)malloc(sizeof(Account));
     strcpy(new1->username, username);
     strcpy(new1->password, password);
-    new1->status = atoi(status);
+    new1->status = OFFLINE;
     new1->position = atoi(position);
     new1->numTrueAns = 0;
     new1->numHelp = 0;
@@ -60,9 +60,9 @@ Account *newAccount(char *username, char *password, char *position, char *maxSco
     return new1;
 }
 //add node
-void addAccount(Account **head, char *username, char *password, char *position,char *maxScore, char *status)
+void addAccount(Account **head, char *username, char *password, char *position,char *maxScore)
 {
-    Account *new1 = newAccount(username, password, position, maxScore, status);
+    Account *new1 = newAccount(username, password, position, maxScore);
     Account *current = (*head);
     if (*head == NULL)
     {
@@ -77,13 +77,12 @@ void addAccount(Account **head, char *username, char *password, char *position,c
     }
 }
 
-void splitAccountFromFile(char *input, char *username, char *password, char *position, char *score, char *status)
+void splitAccountFromFile(char *input, char *username, char *password, char *position, char *score)
 {
 	int usernameLength = 0;
 	int passwordLength = 0;
 	int positionLength = 0;
 	int scoreLength = 0;
-    int statusLength = 0;
 	int i;
 	//printf("splitAccountFromFile\n");
 	//split username
@@ -115,17 +114,6 @@ void splitAccountFromFile(char *input, char *username, char *password, char *pos
 	}
 	i++;
 	position[positionLength] = '\0';
-
-    //split status
-	for (i; i < strlen(input); i++)
-	{
-		if (input[i] == '|')
-			break;
-		status[statusLength++] = input[i];
-	}
-	i++;
-	status[statusLength] = '\0';
-
 	//split score
 	for (i; i < strlen(input); i++)
 	{
@@ -155,8 +143,8 @@ void readAccountFromFile(Account **head)
         if (feof(fin))
             break;
         fgets(input, BUFF_SIZE, fin);
-        splitAccountFromFile(input, username, password, position, maxScore, status);
-        addAccount(head, username, password, position, maxScore,status);
+        splitAccountFromFile(input, username, password, position, maxScore);
+        addAccount(head, username, password, position, maxScore);
     }
     fclose(fin);
 }
@@ -173,7 +161,6 @@ void printListAccount(Account **head)
         printf("Username: %s\n", ptr->username);
         printf("Pass: %s\n", ptr->password);
         printf("Max Score: %d\n", ptr->maxScore);
-        printf("Status: %d\n",ptr->status);
         printf("\n");
     }
 }
@@ -191,11 +178,11 @@ int checkUsername(Account *head, char *username)
     int i;
     while(p!=NULL){
         if(strcmp(p->username, username)==0)
-            return 5; //username ton tai
+            return 5;
             //i=5;
         p=p->next; 
     }
-    return 4; //username ko ton tai
+    return 4;
 }
 
 //kiem tra vi tri la admin hay nguoi choi
@@ -210,27 +197,15 @@ int checkPosition(Account *head)
     return 0;
 }
 
-int checkStatus(Account *head, char *username){
-    Account *p = head;
-    int i;
-    while(p!=NULL){
-        if(strcmp(p->username, username)==0)
-            if(p->status==0) //offline
-                return 1;
-        p=p->next; 
-    }
-    return 0; //online
-}
 
 int checkAccount(Account *head, char *username, char *password)
 {
     Account *p = head;
     int i = 0;
     if(checkUsername(p,username)!=5) return 2; //USERNAME_NOT_EXISTED 
-    if(checkStatus(p, username) == 0) return 15; //USER_ONLINE
     while(p!=NULL){
-        if((checkUsername(p,username)==5) && (strcmp(p->password, password)==0) && (checkStatus(p, username)==1))
-            return 1; //LOGIN_SUCCESS 
+        if((checkUsername(p,username)==5) && (strcmp(p->password, password)==0))
+            return 1;
         p=p->next;
     }
     return 3; //PASSWORD_INCORRECT 
@@ -328,31 +303,12 @@ void updateAccountList(Account *acc, int score){
     if(acc->maxScore < score){
         acc->maxScore = score;
     }
-    fprintf(p,"%s|%s|%d|%d|%d", acc->username, acc->password, acc->position, acc->status, acc->maxScore);
+    fprintf(p,"%s|%s|%d|%d", acc->username, acc->password, acc->position, acc->maxScore);
     
     //in cac account con lai vao file
     for(ptr = account->next; ptr!= NULL; ptr = ptr->next){
         if(strcmp(ptr->username, acc->username)!=0){
-            fprintf(p,"\n%s|%s|%d|%d|%d", ptr->username, ptr->password, ptr->position, ptr->status, ptr->maxScore);
-        } 
-        
-    }
-    fclose(p);
-}
-
-void updateAccountList1(Account *acc){
-    Account *account = (Account *)malloc(sizeof(Account));
-    readAccountFromFile(&account);
-    Account *ptr = NULL;
-    FILE *p;
-    p=fopen("account.txt","w");
-    
-    fprintf(p,"%s|%s|%d|%d|%d", acc->username, acc->password, acc->position, acc->status, acc->maxScore);
-    
-    //in cac account con lai vao file
-    for(ptr = account->next; ptr!= NULL; ptr = ptr->next){
-        if(strcmp(ptr->username, acc->username)!=0){
-            fprintf(p,"\n%s|%s|%d|%d|%d", ptr->username, ptr->password, ptr->position, ptr->status, ptr->maxScore);
+            fprintf(p,"\n%s|%s|%d|%d", ptr->username, ptr->password, ptr->position, ptr->maxScore);
         } 
         
     }
@@ -412,7 +368,3 @@ void xepHangTop10(){
     } 
     fclose(p);
 }
-
-
-
-

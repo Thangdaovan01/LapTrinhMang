@@ -24,11 +24,3 @@
 24|EASY|Câu hỏi 24|Đáp án 1|Đáp án 2|Đáp án 3|Đáp án 4|D|B|C
 1|HARD|Cau hoi 123|Dap an 1|Dap an 2|Dap an 3|Dap an 4|A|B|C
 1|EASY|CAu hoi 124|DA1|DA2|DA3|DA4|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C
-1|EASY|A|B|C|D|E|A|B|C

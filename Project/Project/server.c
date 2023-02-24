@@ -107,8 +107,7 @@ void sig_chld(int signo){
 
 void ketThucStop(int sockfd, Account *acc){
 	Response *response = (Response *)malloc(sizeof(Response));
-	acc->status = 0;
-	updateAccountList1(acc);
+	
 	int tienThuong = TinhTienThuong(acc);
 	response->code = 14;
 	setMessageResponse(response);
@@ -122,8 +121,7 @@ void ketThucStop(int sockfd, Account *acc){
 
 void ketThucWrong(int sockfd, Account *acc){
 	Response *response = (Response *)malloc(sizeof(Response));
-	acc->status = 0;
-	updateAccountList1(acc);
+	
 	int tienThuong = TinhTienThuong2(acc);
 	response->code = 14;
 	setMessageResponse(response);
@@ -153,6 +151,7 @@ void xemBangXepHang(int sockfd){
 		sendResponse(sockfd, response, sizeof(Response),0);
         deleteAcc(&account1, acc->username);
     } 
+    
 }
 
 void player(int sockfd, Question *question, Account *account1){
@@ -348,6 +347,7 @@ void echo(int sockfd) {
 		switch (request->code)
 		{
 		case 1:
+				
 			do{
 				//nhan request bao gom username, password tu phia client
 				receiveRequest(sockfd, request, sizeof(Request), 0);
@@ -364,7 +364,7 @@ void echo(int sockfd) {
 			}while(checkAcc!=1);	
 
 			account1 = findUserNameAccount(&account, request->username);
-			//account1->status = 1;
+			account1->status = 1;
 			//printf("Username: %s - Position: %d - Status: %d - Score: %d - MaxScore: %d - Num: %d\n",account1->username, account1->position, account1->status, account1->score, account1->maxScore, account1->numTrueAns);
 			
 			if(account1->position == 1){
@@ -379,10 +379,9 @@ void echo(int sockfd) {
 			}
 
 			//switch (account1->position)
-			if(account1->position==0) //admin
+			if(account1->position==0) 
 			{
-				account1->status = 1;
-				updateAccountList1(account1);
+				//case 0:
 				while(1){
 					//printf("ADMIN\n");
 					receiveRequest(sockfd, request, sizeof(Request), 0);
@@ -399,13 +398,8 @@ void echo(int sockfd) {
 						printf("Wrong answer2: %s\n",reQuestion1->wrong_ans2);
 						printf("Level: %s\n",reQuestion1->level);*/
 						printQuestionInFile(reQuestion1->question,reQuestion1->answer1, reQuestion1->answer2,reQuestion1->answer3,reQuestion1->answer4,reQuestion1->true_ans,reQuestion1->wrong_ans1,reQuestion1->wrong_ans2,reQuestion1->level);
-						response->code = 16;
-						setMessageResponse(response);
-						sendResponse(sockfd, response, sizeof(Response),0);
 					}else{
 						printf("ADMIN BREAK\n");
-						account1->status = 0;
-						updateAccountList1(account1);
 						break;
 					}
 				}
@@ -413,8 +407,6 @@ void echo(int sockfd) {
 			}else if(account1->position==1){
 				printf("PLAYER\n");
 				account1->numHelp = 3;
-				account1->status = 1;
-				updateAccountList1(account1);  //Cap nhat lai trang thai
 				receiveRequest(sockfd, request, sizeof(Request), 0);
 				if(request->code==10){ //neu yeu cau gui cau tra loi
 					player(sockfd,q,account1);

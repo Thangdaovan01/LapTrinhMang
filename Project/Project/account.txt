@@ -1,0 +1,17 @@
+nguyen|123|1|4
+abc|123|1|1
+test3|123|1|7
+test1|123|1|5
+thang|123|1|9
+nga|123|1|13
+toan|123|1|2
+test2|123|1|5
+test4|123|1|3
+test5|123|1|4
+umihara|123|1|1
+admin|123|0|0
+shinichi|123|1|18
+phu|123|1|0
+nghia|123|1|20
+cbas|123|1|0
+nam|abc|1|0

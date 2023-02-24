@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
 								request->code = 06;
 								sendRequest(client_sock, request, sizeof(Request), 0);
 								receiveResponse(client_sock, response, sizeof(Response),0);
-								printf("Mess: %s - So cau dung: %d - So Tien: %d\n", response->message, response->socaudung, response->tienThuong);
+								printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
 								break;
 							}else if((strcmp(answer1,"A")!=0) || (strcmp(answer1,"B")!=0) || (strcmp(answer1,"C")!=0) || (strcmp(answer1,"D")!=0)){
 								request->code = 03;
@@ -159,9 +159,9 @@ int main(int argc, char *argv[]){
 								receiveResponse(client_sock, response, sizeof(Response),0);
 								printf("%s\n", response->message);
 								if(response->code == 6){
-									//printf("True answer\n");
+									printf("True answer\n");
 								}else{
-									//printf("Wrong answer\n");
+									printf("Wrong answer\n");
 									receiveResponse(client_sock, response, sizeof(Response),0);
 									printf("Mess: %s - So cau dung: %d - Tien: %d\n", response->message, response->socaudung, response->tienThuong);
 		
@@ -200,13 +200,11 @@ int main(int argc, char *argv[]){
 							insertQuestion1(requestQuestion->question, requestQuestion->answer1, requestQuestion->answer2, requestQuestion->answer3, requestQuestion->answer4, requestQuestion->true_ans, requestQuestion->wrong_ans1, requestQuestion->wrong_ans2, requestQuestion->level);
 							sendRequestQuestion(client_sock, requestQuestion, sizeof(RequestQuestion),0);
 							//insertQuestion(requestQuestion->question, requestQuestion->answer1, requestQuestion->answer2, requestQuestion->answer3, requestQuestion->answer4, requestQuestion->tr);
-							receiveResponse(client_sock, response, sizeof(Response),0);
-							printf("%s\n", response->message);
 						}
 
 						if(choose2==2){
-							request->code=11;
-							sendRequest(client_sock, request, sizeof(Request), 0);
+							//request->code=11;
+							//sendRequest(client_sock, request, sizeof(Request), 0);
 							break;
 						} 
 					}					

@@ -252,7 +252,7 @@ int searchQuestionByLevel(Question **head, char* level, int *numberArray)
     }
     return i;
 }
-/*
+
 void deleteQuestion(Question **head, int stt)
 {
     Question *tmp;
@@ -274,7 +274,7 @@ void deleteQuestion(Question **head, int stt)
         }
     free(current);
 }
-*/
+
 int checkAnswer(char *node, char *ans)
 {
     if (node == ans)
